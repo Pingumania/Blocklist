@@ -1,0 +1,15 @@
+## Interface: 100000
+## Version: @project-version@
+
+## Title: Blocklist
+## Author: Pingumania
+## Notes: Add players to a blocklist
+
+## SavedVariables: BlocklistDB
+
+#@non-debug@
+# Embeds.xml
+#@end-non-debug@
+Locales.lua
+Core.lua
+Config.lua
