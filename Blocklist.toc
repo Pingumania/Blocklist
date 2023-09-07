@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100100
 ## Version: @project-version@
 
 ## Title: Blocklist
@@ -6,6 +6,7 @@
 ## Notes: Add players to a blocklist
 
 ## SavedVariables: BlocklistDB
+## OptionalDeps: Ace3
 
 #@non-debug@
 # Embeds.xml
