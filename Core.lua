@@ -13,7 +13,7 @@ local function OnClickHide()
 end
 
 do
-	popup = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
+	popup = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	popup:SetSize(450, 80)
 	popup:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark"})
 	popup:SetPoint("CENTER", UIParent, "CENTER")
@@ -66,10 +66,11 @@ local function Popup(tbl)
 	popup:Show()
 end
 
+local f = CreateFrame("Frame")
 local function IterateGroupMembers()
 	if InCombatLockdown() and not inCombat then
 		inCombat = true
-		EventRegistry:RegisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", IterateGroupMembers)
+		f:RegisterEvent("PLAYER_REGEN_ENABLED")
 		return
 	end
 
@@ -108,23 +109,36 @@ local function IterateGroupMembers()
 	end
 
 	inCombat = nil
-	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_REGEN_ENABLED", IterateGroupMembers)
+	f:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end
 
-local function ADDON_LOADED(event, addon)
+function f:PLAYER_REGEN_ENABLED()
+	IterateGroupMembers()
+end
+
+function f:ADDON_LOADED(event, addon)
 	if addon == "Blocklist" then
 		if not BlocklistDB then
 			BlocklistDB = {}
 		end
 	end
-	EventRegistry:UnregisterFrameEventAndCallback("ADDON_LOADED", ADDON_LOADED)
+	f:UnregisterEvent("ADDON_LOADED")
 end
 
-local function GROUP_JOINED()
+function f:GROUP_JOINED()
 	groupWarning = {}
 end
 
-EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", ADDON_LOADED)
-EventRegistry:RegisterFrameEventAndCallback("GROUP_ROSTER_UPDATE", IterateGroupMembers)
-EventRegistry:RegisterFrameEventAndCallback("GROUP_JOINED", GROUP_JOINED)
-EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", IterateGroupMembers)
+function f:GROUP_ROSTER_UPDATE()
+	IterateGroupMembers()
+end
+
+function f:PLAYER_ENTERING_WORLD()
+	IterateGroupMembers()
+end
+
+f:SetScript("OnEvent", function(self, event, ...) self[event](self, event, ...) end)
+f:RegisterEvent("ADDON_LOADED")
+f:RegisterEvent("GROUP_ROSTER_UPDATE")
+f:RegisterEvent("GROUP_JOINED")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
