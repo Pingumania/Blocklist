@@ -74,20 +74,21 @@ local function IterateGroupMembers()
 		return
 	end
 
-	local prefix  = IsInRaid() and "raid" or "party"
-	local name    = ""
-	local class   = ""
-	local realm   = GetNormalizedRealmName()
+	local prefix = IsInRaid() and "raid" or "party"
+	local name
+	local class
+	local realm = GetNormalizedRealmName()
+	if not realm then return end
 
 	for i = 1, GetNumGroupMembers() do
 		local unit = prefix..i
 		name = GetUnitName(unit, true)
 		class = UnitClassBase(unit)
-		if name and not name:find("-") then
-			name = name.."-"..realm
-		end
-	
-		if name then
+		if name and name ~= "Unknown" then
+			if not strfind(name, '-') then
+				name = name.."-"..realm
+			end
+
 			if not recentPlayers[name] then
 				recentPlayers[name] = {
 					class = class
@@ -137,8 +138,13 @@ function f:PLAYER_ENTERING_WORLD()
 	IterateGroupMembers()
 end
 
+function f:INSTANCE_GROUP_SIZE_CHANGED()
+	IterateGroupMembers()
+end
+
 f:SetScript("OnEvent", function(self, event, ...) self[event](self, event, ...) end)
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("GROUP_ROSTER_UPDATE")
+f:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED")
 f:RegisterEvent("GROUP_JOINED")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
