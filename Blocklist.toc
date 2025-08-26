@@ -1,16 +1,14 @@
-## Interface: 100207
-## Version: @project-version@
+## Interface: 110200
 
 ## Title: Blocklist
-## Author: Pingumania
 ## Notes: Add players to a blocklist
+## Category: Other
+## Author: Pingumania
+## Version: @project-version@
 
 ## SavedVariables: BlocklistDB
-## OptionalDeps: Ace3
 
-#@non-debug@
-# Embeds.xml
-#@end-non-debug@
+Embeds.xml
 Locales.lua
 Core.lua
 Config.lua
