@@ -1,3 +1,3 @@
-Blocklist Changes | 1.0.0
--------------------------
-- Initial Release
+Blocklist | v1
+-----------------
+- Initial release
