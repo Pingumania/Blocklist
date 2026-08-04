@@ -19,3 +19,7 @@ Locales\deDE.lua
 
 Addon.lua
 Frame.lua
+
+#@debug@
+Demo.lua
+#@end-debug@
