@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 120007
 
 ## Title: Blocklist
 ## Notes: Add players to a blocklist
@@ -8,7 +8,14 @@
 
 ## SavedVariables: BlocklistDB
 
-Embeds.xml
-Locales.lua
-Core.lua
-Config.lua
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+Libs\Huddle\Embed.xml
+
+Locales\enUS.lua
+Locales\deDE.lua
+
+Addon.lua
+Frame.lua

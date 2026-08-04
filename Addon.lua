@@ -66,11 +66,20 @@ local function Popup(tbl)
 	popup:Show()
 end
 
-local f = CreateFrame("Frame")
+local function CurrentActivity()
+	local instance, instanceType = GetInstanceInfo()
+
+	if instanceType ~= "none" then
+		return instance
+	end
+
+	return GetRealZoneText()
+end
+
 local function IterateGroupMembers()
 	if InCombatLockdown() and not inCombat then
 		inCombat = true
-		f:RegisterEvent("PLAYER_REGEN_ENABLED")
+		ns:RegisterEvent("PLAYER_REGEN_ENABLED", IterateGroupMembers)
 		return
 	end
 
@@ -91,14 +100,15 @@ local function IterateGroupMembers()
 
 			if not recentPlayers[name] then
 				recentPlayers[name] = {
-					class = class
+					class = class,
+					activity = CurrentActivity(),
 				}
 			end
-			if BlocklistDB[name] and not groupWarning[name] then
+			if ns.Blocked()[name] and not groupWarning[name] then
 				doWarn = true
 				groupWarning[name] = {
 					class = class,
-					note = BlocklistDB[name].note
+					note = ns.Blocked()[name].note
 				}
 			end
 		end
@@ -110,41 +120,54 @@ local function IterateGroupMembers()
 	end
 
 	inCombat = nil
-	f:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	ns:UnregisterEvent("PLAYER_REGEN_ENABLED", IterateGroupMembers)
 end
 
-function f:PLAYER_REGEN_ENABLED()
-	IterateGroupMembers()
-end
+function ns:OnLoad()
+	BlocklistDB = BlocklistDB or {}
 
-function f:ADDON_LOADED(event, addon)
-	if addon == "Blocklist" then
-		if not BlocklistDB then
-			BlocklistDB = {}
+	if BlocklistDB.players == nil then
+		local players = {}
+		for name, entry in pairs(BlocklistDB) do
+			players[name] = entry
 		end
+
+		BlocklistDB = { players = players }
 	end
-	f:UnregisterEvent("ADDON_LOADED")
+
+	BlocklistDB.minimap = BlocklistDB.minimap or {}
+
+	ns.SetupMinimapButton()
 end
 
-function f:GROUP_JOINED()
+ns:RegisterEvent("GROUP_JOINED", function()
 	groupWarning = {}
+end)
+
+ns:RegisterEvent("GROUP_ROSTER_UPDATE", IterateGroupMembers)
+ns:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED", IterateGroupMembers)
+ns:RegisterEvent("PLAYER_ENTERING_WORLD", IterateGroupMembers)
+
+local broker = LibStub("LibDataBroker-1.1"):NewDataObject(ADDON_NAME, {
+	type = "launcher",
+	icon = "Interface\\Icons\\Ability_Rogue_Disguise",
+	OnClick = function(_, button)
+		if button == "LeftButton" then
+			ns.Toggle()
+		end
+	end,
+	OnTooltipShow = function(tooltip)
+		tooltip:AddLine(ADDON_NAME)
+		tooltip:AddLine(L["MinimapTooltip"], 1, 1, 1)
+	end,
+})
+
+local icon = LibStub("LibDBIcon-1.0")
+
+function ns.SetupMinimapButton()
+	icon:Register(ADDON_NAME, broker, BlocklistDB.minimap)
 end
 
-function f:GROUP_ROSTER_UPDATE()
-	IterateGroupMembers()
-end
-
-function f:PLAYER_ENTERING_WORLD()
-	IterateGroupMembers()
-end
-
-function f:INSTANCE_GROUP_SIZE_CHANGED()
-	IterateGroupMembers()
-end
-
-f:SetScript("OnEvent", function(self, event, ...) self[event](self, event, ...) end)
-f:RegisterEvent("ADDON_LOADED")
-f:RegisterEvent("GROUP_ROSTER_UPDATE")
-f:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED")
-f:RegisterEvent("GROUP_JOINED")
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
+ns:RegisterSlash("/blocklist", "/bl", function()
+	ns.Toggle()
+end)
