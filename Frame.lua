@@ -70,6 +70,8 @@ local ICON_SIZE = 18
 local ACTION_SIZE = 20
 local RESIZE_SIZE = 12
 local NAME_WIDTH = 170
+local MEDIA = [[Interface\AddOns\Blocklist\Media\]]
+local CHECKMARK = ("|T%scommon-icon-checkmark:14:14|t"):format(MEDIA)
 
 -- the list sits this far inside the frame's inset, and each row this far inside the list, so the
 -- column headers add both to line up with what is under them
@@ -208,7 +210,7 @@ local function InitRow(row, data)
 
 		row.Edit.Icon = row.Edit:CreateTexture(nil, "ARTWORK")
 		row.Edit.Icon:SetAllPoints()
-		row.Edit.Icon:SetAtlas("common-icon-speak")
+		row.Edit.Icon:SetTexture(MEDIA .. "common-icon-speak", nil, nil, "TRILINEAR")
 
 		row.Status = row:CreateFontString(nil, "ARTWORK", "GameFontDisable")
 		row.Status:SetPoint("RIGHT", row.Action, "LEFT", -COLUMN_GAP, 0)
@@ -224,7 +226,7 @@ local function InitRow(row, data)
 	row.striped = data.index % 2 == 0
 	row.Stripe:SetShown(row.striped and not row:IsMouseOver())
 
-	row.Icon:SetAtlas(GetClassAtlas(strlower(data.entry.class or "PRIEST")))
+	row.Icon:SetTexture(MEDIA .. GetClassAtlas(strlower(data.entry.class or "PRIEST")), nil, nil, "TRILINEAR")
 
 	row.Name:SetText(data.name)
 	row.Name:SetTextColor(color.r, color.g, color.b)
@@ -244,7 +246,7 @@ local function InitRow(row, data)
 		row.Note:SetText(data.entry.note ~= "" and data.entry.note or "-")
 		row.Note:SetPoint("RIGHT", row.Edit, "LEFT", -COLUMN_GAP, 0)
 		row.Status:SetText("")
-		row.Action.Icon:SetAtlas("common-icon-redx")
+		row.Action.Icon:SetTexture(MEDIA .. "common-icon-redx", nil, nil, "TRILINEAR")
 		row.Action.tooltip = L["Remove"]
 		row.Action:Show()
 		row.Edit:Show()
@@ -252,8 +254,8 @@ local function InitRow(row, data)
 		local blocked = ns.Blocked()[data.name]
 		row.Note:SetText(data.entry.activity or "")
 		row.Note:SetPoint("RIGHT", row.Status, "LEFT", -COLUMN_GAP, 0)
-		row.Status:SetText(blocked and CreateAtlasMarkup("common-icon-checkmark", 14, 14) or "")
-		row.Action.Icon:SetAtlas("communities-icon-addgroupplus")
+		row.Status:SetText(blocked and CHECKMARK or "")
+		row.Action.Icon:SetTexture(MEDIA .. "communities-icon-addgroupplus", nil, nil, "TRILINEAR")
 		row.Action.tooltip = L["Add"]
 		row.Action:SetShown(not blocked)
 		row.Edit:Hide()
