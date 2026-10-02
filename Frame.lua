@@ -71,7 +71,7 @@ local ACTION_SIZE = 20
 local RESIZE_SIZE = 12
 local NAME_WIDTH = 170
 local MEDIA = [[Interface\AddOns\Blocklist\Media\]]
-local CHECKMARK = ("|T%scommon-icon-checkmark:14:14|t"):format(MEDIA)
+local CHECKMARK = ("|T%scommon-icon-checkmark-small:14:14|t"):format(MEDIA)
 
 -- the list sits this far inside the frame's inset, and each row this far inside the list, so the
 -- column headers add both to line up with what is under them
