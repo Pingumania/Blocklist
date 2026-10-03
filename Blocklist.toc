@@ -3,6 +3,7 @@
 ## Title: Blocklist
 ## Notes: Add players to a blocklist
 ## Category: Other
+## IconAtlas: friends-icon-eye
 ## Author: Pingumania
 ## Version: @project-version@
 
